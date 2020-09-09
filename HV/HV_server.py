@@ -218,14 +218,10 @@ def on_message(client, userdata, msg):
     data = eval(str(msg.payload.decode('utf-8')))
 
     influxdbLineCommand = []
-
-    data_end_time = int(time.time() * 1000) #milliseconds
-    #print(datetime.utcnow())
-
-    timestamp = time.time()
-    dt_object = datetime.fromtimestamp(timestamp)
-
-    CurrentTime = datetime.now()
+    #################### Time in miliseconds UTC ##########################
+    CurrentTime = datetime.utcnow().timestamp()
+    data_end_time = int(CurrentTime * 1000)
+    CurrentTime = datetime.fromtimestamp(CurrentTime)
 
     influxdbLineCommand.append("{measurement},Voltage={Voltage} 8L={_8L},8R={_8R},7L={_7L},7R={_7R},6L={_6L},6R={_6R} {timestamp}"
                                 .format(measurement='HV_COSMIC_STAND',
@@ -317,7 +313,7 @@ def on_message(client, userdata, msg):
 
     if {'name' : databaseName} in dbclient.get_list_database():
         dbclient.write_points(influxdbLineCommand, database=databaseName, time_precision='ms', protocol='line')
-        print("{} ---> Point : {} ---> Finished writing to InfluxDB".format(CurrentTime, ReadNumber), end='\r')
+        print("UTC-Time: {} ---> Point : {} ---> Finished writing to InfluxDB".format(CurrentTime, ReadNumber), end='\r')
         pass
 
     else:

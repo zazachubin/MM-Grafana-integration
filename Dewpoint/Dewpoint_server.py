@@ -109,11 +109,13 @@ def on_connect(client, userdata, flags, rc):
 
 def on_message(client, userdata, msg):
     global dbclient
-    data = eval(str(msg.payload.decode('utf-8'))) 
-    influxdbLineCommand = []
+    data = eval(str(msg.payload.decode('utf-8')))
 
-    data_end_time = int(time.time() * 1000) #milliseconds
-    CurrentTime = datetime.now()
+    influxdbLineCommand = []
+   #################### Time in miliseconds UTC ##########################
+    CurrentTime = datetime.utcnow().timestamp()
+    data_end_time = int(CurrentTime * 1000)
+    CurrentTime = datetime.fromtimestamp(CurrentTime)
 
     influxdbLineCommand.append("{measurement},Sensor={Sensor} Dewpoint={Dewpoint} {timestamp}"
                                 .format(measurement='Dewpoint_COSMIC_STAND',
@@ -129,7 +131,7 @@ def on_message(client, userdata, msg):
 
     if {'name' : databaseName} in dbclient.get_list_database():
         dbclient.write_points(influxdbLineCommand, database=databaseName, time_precision='ms', protocol='line')
-        print("Time: {} --> Dewpoint: {} --> Point : {} --> Finished writing to InfluxDB".format(CurrentTime, data['Dewpoint'], ReadNumber), end='\r')
+        print("UTC-Time: {} --> Dewpoint: {} --> Point : {} --> Finished writing to InfluxDB".format(CurrentTime, data['Dewpoint'], ReadNumber), end='\r')
         pass
 
     else:
