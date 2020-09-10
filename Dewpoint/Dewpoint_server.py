@@ -70,6 +70,11 @@ dbclient = InfluxDBClient(  host=InfluxDB_ADDRESS,
                             password=password,
                             database=databaseName)
 
+logname = "Dewpoint_{}.txt".format(str(datetime.fromtimestamp(datetime.utcnow().timestamp())))
+f = open(logname, "a")
+f.write("{},{},{}\n".format('Time', 'Dewpoint', 'Humidity'))
+f.close()
+
 def readDeviceData():
     # get adc value from picolg
     status["getSingle"] = pl.pl1000GetSingle(chandle, pl.PL1000Inputs["PL1000_CHANNEL_1"], ctypes.byref(value))
@@ -87,18 +92,9 @@ def readDewpoint2mqtt():
     while True:
         dewpoint = readDeviceData()
         client.publish(MQTT_TOPIC, str(dewpoint))
-        '''
-        ####################################### Table Viszualization #########################################
-        tableData = [['Time', 'Diwpoint [C]', 'Humidity [%]', 'Points']]
-        CurrentTime = datetime.now()
-        tableData.append([ str(CurrentTime), str(dewpoint["Dewpoint"]), str(dewpoint["Humidity"]), str(ReadNumber) ])
-        
-        Table = Texttable()
-        Table.add_rows(tableData)
-        TableText = Table.draw()
-        print(TableText)
-        os.system('clear')
-        '''
+        #CurrentTime = datetime.fromtimestamp(datetime.utcnow().timestamp())
+        #f.write("{},{},{}\n".format(CurrentTime, dewpoint['Dewpoint'], dewpoint['Humidity']))
+        #f.close()
         ReadNumber +=1
         time.sleep(Delay)
 
@@ -116,6 +112,10 @@ def on_message(client, userdata, msg):
     CurrentTime = datetime.utcnow().timestamp()
     data_end_time = int(CurrentTime * 1000)
     CurrentTime = datetime.fromtimestamp(CurrentTime)
+
+    f = open(logname, "a")
+    f.write("{},{},{}\n".format(CurrentTime, data['Dewpoint'], data['Humidity']))
+    f.close()
 
     influxdbLineCommand.append("{measurement},Sensor={Sensor} Dewpoint={Dewpoint} {timestamp}"
                                 .format(measurement='Dewpoint_COSMIC_STAND',
