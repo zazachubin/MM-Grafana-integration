@@ -51,6 +51,85 @@ dbclient = InfluxDBClient(  host=InfluxDB_ADDRESS,
                             password=password,
                             database=databaseName)
 
+startTimeStamp = datetime.fromtimestamp(datetime.utcnow().timestamp())
+lognameB0 = "HV_B0_{}.csv".format(str(startTimeStamp))
+lognameB1 = "HV_B1_{}.csv".format(str(startTimeStamp))
+
+f1 = open(lognameB0, "a")
+f2 = open(lognameB1, "a")
+f1.write("{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{}\n".format(
+'Time',
+'V_ch0',
+'I_ch0',
+'V_ch1',
+'I_ch1',
+'V_ch2',
+'I_ch2',
+'V_ch3',
+'I_ch3',
+'V_ch4',
+'I_ch4',
+'V_ch5',
+'I_ch5',
+'V_ch6',
+'I_ch6',
+'V_ch7',
+'I_ch7',
+'V_ch8',
+'I_ch8',
+'V_ch9',
+'I_ch9',
+'V_ch10',
+'I_ch10',
+'V_ch11',
+'I_ch11',
+'V_ch12',
+'I_ch12',
+'V_ch13',
+'I_ch13',
+'V_ch14',
+'I_ch14',
+'V_ch15',
+'I_ch15',))
+
+f2.write("{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{}\n".format(
+'Time',
+'V_ch0',
+'I_ch0',
+'V_ch1',
+'I_ch1',
+'V_ch2',
+'I_ch2',
+'V_ch3',
+'I_ch3',
+'V_ch4',
+'I_ch4',
+'V_ch5',
+'I_ch5',
+'V_ch6',
+'I_ch6',
+'V_ch7',
+'I_ch7',
+'V_ch8',
+'I_ch8',
+'V_ch9',
+'I_ch9',
+'V_ch10',
+'I_ch10',
+'V_ch11',
+'I_ch11',
+'V_ch12',
+'I_ch12',
+'V_ch13',
+'I_ch13',
+'V_ch14',
+'I_ch14',
+'V_ch15',
+'I_ch15',))
+
+f1.close()
+f2.close()
+
 class HVBoard():
     def readDeviceData(self, boardName):
         cmdGen = cmdgen.CommandGenerator()
@@ -232,6 +311,81 @@ def on_message(client, userdata, msg):
     influxdbContainer = []
     ############### Time in UTC ################
     CurrentTime = datetime.fromtimestamp(datetime.utcnow().timestamp())
+
+    f1 = open(lognameB0, "a")
+    f2 = open(lognameB1, "a")
+
+    f1.write("{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{}\n".format(
+        CurrentTime,
+        data['B0']['Voltage']['Ch0'],
+        data['B0']['Current']['Ch0'],
+        data['B0']['Voltage']['Ch1'],
+        data['B0']['Current']['Ch1'],
+        data['B0']['Voltage']['Ch2'],
+        data['B0']['Current']['Ch2'],
+        data['B0']['Voltage']['Ch3'],
+        data['B0']['Current']['Ch3'],
+        data['B0']['Voltage']['Ch4'],
+        data['B0']['Current']['Ch4'],
+        data['B0']['Voltage']['Ch5'],
+        data['B0']['Current']['Ch5'],
+        data['B0']['Voltage']['Ch6'],
+        data['B0']['Current']['Ch6'],
+        data['B0']['Voltage']['Ch7'],
+        data['B0']['Current']['Ch7'],
+        data['B0']['Voltage']['Ch8'],
+        data['B0']['Current']['Ch8'],
+        data['B0']['Voltage']['Ch9'],
+        data['B0']['Current']['Ch9'],
+        data['B0']['Voltage']['Ch10'],
+        data['B0']['Current']['Ch10'],
+        data['B0']['Voltage']['Ch11'],
+        data['B0']['Current']['Ch11'],
+        data['B0']['Voltage']['Ch12'],
+        data['B0']['Current']['Ch12'],
+        data['B0']['Voltage']['Ch13'],
+        data['B0']['Current']['Ch13'],
+        data['B0']['Voltage']['Ch14'],
+        data['B0']['Current']['Ch14'],
+        data['B0']['Voltage']['Ch15'],
+        data['B0']['Current']['Ch15']))
+    
+    f2.write("{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{}\n".format(
+        CurrentTime,
+        data['B1']['Voltage']['Ch0'],
+        data['B1']['Current']['Ch0'],
+        data['B1']['Voltage']['Ch1'],
+        data['B1']['Current']['Ch1'],
+        data['B1']['Voltage']['Ch2'],
+        data['B1']['Current']['Ch2'],
+        data['B1']['Voltage']['Ch3'],
+        data['B1']['Current']['Ch3'],
+        data['B1']['Voltage']['Ch4'],
+        data['B1']['Current']['Ch4'],
+        data['B1']['Voltage']['Ch5'],
+        data['B1']['Current']['Ch5'],
+        data['B1']['Voltage']['Ch6'],
+        data['B1']['Current']['Ch6'],
+        data['B1']['Voltage']['Ch7'],
+        data['B1']['Current']['Ch7'],
+        data['B1']['Voltage']['Ch8'],
+        data['B1']['Current']['Ch8'],
+        data['B1']['Voltage']['Ch9'],
+        data['B1']['Current']['Ch9'],
+        data['B1']['Voltage']['Ch10'],
+        data['B1']['Current']['Ch10'],
+        data['B1']['Voltage']['Ch11'],
+        data['B1']['Current']['Ch11'],
+        data['B1']['Voltage']['Ch12'],
+        data['B1']['Current']['Ch12'],
+        data['B1']['Voltage']['Ch13'],
+        data['B1']['Current']['Ch13'],
+        data['B1']['Voltage']['Ch14'],
+        data['B1']['Current']['Ch14'],
+        data['B1']['Voltage']['Ch15'],
+        data['B1']['Current']['Ch15']))
+    f1.close()
+    f2.close()
 
     ################### L1 #####################
     ## PCB L8

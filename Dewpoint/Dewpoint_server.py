@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-''' 
+''' Source Code: https://github.com/zazachubin/MM-Grafana-integration
     ################### install picolog libraries ######################
     #Add repository to the updater
     sudo bash -c 'echo "deb https://labs.picotech.com/debian/ picoscope main" >/etc/apt/sources.list.d/picoscope.list'
