@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
-''' 
+''' Source Code: https://github.com/zazachubin/MM-Grafana-integration
     #################### install pysnmp libraries ######################
     python3 -m pip install pysnmp
     ##################### install MQTT libraries #######################
     python3 -m pip install paho-mqtt
     ############## install terminal table visualization ################
     python3 -m pip install texttable
+
+    test run: python3 HV_server_test.py --M M25
 '''
 from pysnmp.entity.rfc3413.oneliner import cmdgen
 from influxdb import InfluxDBClient
@@ -14,6 +16,7 @@ from texttable import Texttable
 from datetime import datetime
 import pandas as pd
 import threading
+import argparse
 import struct
 import time
 import os
@@ -38,7 +41,7 @@ HV_port = 161                      # HV port
 payload = {}                       # MQTT data container
 ReadNumber = 0                     # Counter
 Delay = 0.2                        # Device reading delay
-
+ModuleName = ''                    # Measuring module name
 
 client= mqtt.Client("HV")
 client.connect(MQTT_ADDRESS, MQTT_port, keepalive=60)
@@ -55,8 +58,8 @@ class HVBoard():
         cmdgen.CommunityData('public'),
         cmdgen.UdpTransportTarget((HVaddress, HV_port)),
         0,25,
-        '1.3.6.1.4.1.19947.1.3.2.1.7',
-        '1.3.6.1.4.1.19947.1.3.2.1.6'
+        '1.3.6.1.4.1.19947.1.3.2.1.7', # outputMeasurementCurrent
+        '1.3.6.1.4.1.19947.1.3.2.1.6'  # outputMeasurementSenseVoltage
         )
 
         currdata = []
@@ -158,6 +161,15 @@ class HVBoard():
 
         return DataContainer
 
+def parse_args():
+    """Parse the args."""
+    parser = argparse.ArgumentParser(
+        description='HV server logger')
+    parser.add_argument('--M', type=str, required=False,
+                        default='M_test',
+                        help='Module name')
+    return parser.parse_args()
+
 def readHV2mqtt():
     global payload, ReadNumber
     B0 = HVBoard()
@@ -217,112 +229,413 @@ def on_message(client, userdata, msg):
     global dbclient
     data = eval(str(msg.payload.decode('utf-8')))
 
-    influxdbLineCommand = []
-    #################### Time in miliseconds UTC ##########################
-    CurrentTime = datetime.utcnow().timestamp()
-    data_end_time = int(CurrentTime * 1000)
-    CurrentTime = datetime.fromtimestamp(CurrentTime)
+    influxdbContainer = []
+    ############### Time in UTC ################
+    CurrentTime = datetime.fromtimestamp(datetime.utcnow().timestamp())
 
-    influxdbLineCommand.append("{measurement},Voltage={Voltage} L8={L8},R8={R8},L7={L7},R7={R7},L6={L6},R6={R6} {timestamp}"
-                                .format(measurement='HV_COSMIC_STAND',
-                                        Voltage='L1',
-                                        L8=data['B1']['Voltage']['Ch7'],
-                                        R8=data['B1']['Voltage']['Ch6'],
-                                        L7=data['B1']['Voltage']['Ch15'],
-                                        R7=data['B1']['Voltage']['Ch14'],
-                                        L6=data['B0']['Voltage']['Ch7'],
-                                        R6=data['B0']['Voltage']['Ch6'],
-                                        timestamp=data_end_time))
-
-    influxdbLineCommand.append("{measurement},Current={Current} L8={L8},R8={R8},L7={L7},R7={R7},L6={L6},R6={R6} {timestamp}"
-                                .format(measurement='HV_COSMIC_STAND',
-                                        Current='L1',
-                                        L8=data['B1']['Current']['Ch7'],
-                                        R8=data['B1']['Current']['Ch6'],
-                                        L7=data['B1']['Current']['Ch15'],
-                                        R7=data['B1']['Current']['Ch14'],
-                                        L6=data['B0']['Current']['Ch7'],
-                                        R6=data['B0']['Current']['Ch6'],
-                                        timestamp=data_end_time))
-
-    influxdbLineCommand.append("{measurement},Voltage={Voltage} L8={L8},R8={R8},L7={L7},R7={R7},L6={L6},R6={R6} {timestamp}"
-                                .format(measurement='HV_COSMIC_STAND',
-                                        Voltage='L2',
-                                        L8=data['B1']['Voltage']['Ch5'],
-                                        R8=data['B1']['Voltage']['Ch4'],
-                                        L7=data['B1']['Voltage']['Ch13'],
-                                        R7=data['B1']['Voltage']['Ch12'],
-                                        L6=data['B0']['Voltage']['Ch5'],
-                                        R6=data['B0']['Voltage']['Ch4'],
-                                        timestamp=data_end_time))
-
-    influxdbLineCommand.append("{measurement},Current={Current} L8={L8},R8={R8},L7={L7},R7={R7},L6={L6},R6={R6} {timestamp}"
-                                .format(measurement='HV_COSMIC_STAND',
-                                        Current='L2',
-                                        L8=data['B1']['Current']['Ch5'],
-                                        R8=data['B1']['Current']['Ch4'],
-                                        L7=data['B1']['Current']['Ch13'],
-                                        R7=data['B1']['Current']['Ch12'],
-                                        L6=data['B0']['Current']['Ch5'],
-                                        R6=data['B0']['Current']['Ch4'],
-                                        timestamp=data_end_time))
-
-    influxdbLineCommand.append("{measurement},Voltage={Voltage} L8={L8},R8={R8},L7={L7},R7={R7},L6={L6},R6={R6} {timestamp}"
-                                .format(measurement='HV_COSMIC_STAND',
-                                        Voltage='L3',
-                                        L8=data['B1']['Voltage']['Ch3'],
-                                        R8=data['B1']['Voltage']['Ch2'],
-                                        L7=data['B1']['Voltage']['Ch11'],
-                                        R7=data['B1']['Voltage']['Ch10'],
-                                        L6=data['B0']['Voltage']['Ch3'],
-                                        R6=data['B0']['Voltage']['Ch2'],
-                                        timestamp=data_end_time))
-
-    influxdbLineCommand.append("{measurement},Current={Current} L8={L8},R8={R8},L7={L7},R7={R7},L6={L6},R6={R6} {timestamp}"
-                                .format(measurement='HV_COSMIC_STAND',
-                                        Current='L3',
-                                        L8=data['B1']['Current']['Ch3'],
-                                        R8=data['B1']['Current']['Ch2'],
-                                        L7=data['B1']['Current']['Ch11'],
-                                        R7=data['B1']['Current']['Ch10'],
-                                        L6=data['B0']['Current']['Ch3'],
-                                        R6=data['B0']['Current']['Ch2'],
-                                        timestamp=data_end_time))
-
-    influxdbLineCommand.append("{measurement},Voltage={Voltage} L8={L8},R8={R8},L7={L7},R7={R7},L6={L6},R6={R6} {timestamp}"
-                                .format(measurement='HV_COSMIC_STAND',
-                                        Voltage='L4',
-                                        L8=data['B1']['Voltage']['Ch1'],
-                                        R8=data['B1']['Voltage']['Ch0'],
-                                        L7=data['B1']['Voltage']['Ch9'],
-                                        R7=data['B1']['Voltage']['Ch8'],
-                                        L6=data['B0']['Voltage']['Ch1'],
-                                        R6=data['B0']['Voltage']['Ch0'],
-                                        timestamp=data_end_time))
-
-    influxdbLineCommand.append("{measurement},Current={Current} L8={L8},R8={R8},L7={L7},R7={R7},L6={L6},R6={R6} {timestamp}"
-                                .format(measurement='HV_COSMIC_STAND',
-                                        Current='L4',
-                                        L8=data['B1']['Current']['Ch1'],
-                                        R8=data['B1']['Current']['Ch0'],
-                                        L7=data['B1']['Current']['Ch9'],
-                                        R7=data['B1']['Current']['Ch8'],
-                                        L6=data['B0']['Current']['Ch1'],
-                                        R6=data['B0']['Current']['Ch0'],
-                                        timestamp=data_end_time))
+    ################### L1 #####################
+    ## PCB L8
+    influxdbContainer.append(
+        {
+            "measurement": "HV_COSMIC_STAND",
+            "tags": {
+                "Module" : ModuleName,
+                "Layer" : "L1",
+                "PCB" : "L8"
+            },
+            "time": CurrentTime,
+            "fields": {
+                "Voltage" : data['B1']['Voltage']['Ch7'],
+                "Current" : data['B1']['Current']['Ch7']
+            }
+        }
+    )
+    ## PCB R8
+    influxdbContainer.append(
+        {
+            "measurement": "HV_COSMIC_STAND",
+            "tags": {
+                "Module" : ModuleName,
+                "Layer" : "L1",
+                "PCB" : "R8"
+            },
+            "time": CurrentTime,
+            "fields": {
+                "Voltage" : data['B1']['Voltage']['Ch6'],
+                "Current" : data['B1']['Current']['Ch6']
+            }
+        }
+    )
+    ## PCB L7
+    influxdbContainer.append(
+        {
+            "measurement": "HV_COSMIC_STAND",
+            "tags": {
+                "Module" : ModuleName,
+                "Layer" : "L1",
+                "PCB" : "L7"
+            },
+            "time": CurrentTime,
+            "fields": {
+                "Voltage" : data['B1']['Voltage']['Ch15'],
+                "Current" : data['B1']['Current']['Ch15']
+            }
+        }
+    )
+    ## PCB R7
+    influxdbContainer.append(
+        {
+            "measurement": "HV_COSMIC_STAND",
+            "tags": {
+                "Module" : ModuleName,
+                "Layer" : "L1",
+                "PCB" : "R7"
+            },
+            "time": CurrentTime,
+            "fields": {
+                "Voltage" : data['B1']['Voltage']['Ch14'],
+                "Current" : data['B1']['Current']['Ch14']
+            }
+        }
+    )
+    ## PCB L6
+    influxdbContainer.append(
+        {
+            "measurement": "HV_COSMIC_STAND",
+            "tags": {
+                "Module" : ModuleName,
+                "Layer" : "L1",
+                "PCB" : "L6"
+            },
+            "time": CurrentTime,
+            "fields": {
+                "Voltage" : data['B0']['Voltage']['Ch7'],
+                "Current" : data['B0']['Current']['Ch7']
+            }
+        }
+    )
+    ## PCB R6
+    influxdbContainer.append(
+        {
+            "measurement": "HV_COSMIC_STAND",
+            "tags": {
+                "Module" : ModuleName,
+                "Layer" : "L1",
+                "PCB" : "R6"
+            },
+            "time": CurrentTime,
+            "fields": {
+                "Voltage" : data['B0']['Voltage']['Ch6'],
+                "Current" : data['B0']['Current']['Ch6']
+            }
+        }
+    )
+    ################### L2 #####################
+    ## PCB L8
+    influxdbContainer.append(
+        {
+            "measurement": "HV_COSMIC_STAND",
+            "tags": {
+                "Module" : ModuleName,
+                "Layer" : "L2",
+                "PCB" : "L8"
+            },
+            "time": CurrentTime,
+            "fields": {
+                "Voltage" : data['B1']['Voltage']['Ch5'],
+                "Current" : data['B1']['Current']['Ch5']
+            }
+        }
+    )
+    ## PCB R8
+    influxdbContainer.append(
+        {
+            "measurement": "HV_COSMIC_STAND",
+            "tags": {
+                "Module" : ModuleName,
+                "Layer" : "L2",
+                "PCB" : "R8"
+            },
+            "time": CurrentTime,
+            "fields": {
+                "Voltage" : data['B1']['Voltage']['Ch4'],
+                "Current" : data['B1']['Current']['Ch4']
+            }
+        }
+    )
+    ## PCB L7
+    influxdbContainer.append(
+        {
+            "measurement": "HV_COSMIC_STAND",
+            "tags": {
+                "Module" : ModuleName,
+                "Layer" : "L2",
+                "PCB" : "L7"
+            },
+            "time": CurrentTime,
+            "fields": {
+                "Voltage" : data['B1']['Voltage']['Ch13'],
+                "Current" : data['B1']['Current']['Ch13']
+            }
+        }
+    )
+    ## PCB R7
+    influxdbContainer.append(
+        {
+            "measurement": "HV_COSMIC_STAND",
+            "tags": {
+                "Module" : ModuleName,
+                "Layer" : "L2",
+                "PCB" : "R7"
+            },
+            "time": CurrentTime,
+            "fields": {
+                "Voltage" : data['B1']['Voltage']['Ch12'],
+                "Current" : data['B1']['Current']['Ch12']
+            }
+        }
+    )
+    ## PCB L6
+    influxdbContainer.append(
+        {
+            "measurement": "HV_COSMIC_STAND",
+            "tags": {
+                "Module" : ModuleName,
+                "Layer" : "L2",
+                "PCB" : "L6"
+            },
+            "time": CurrentTime,
+            "fields": {
+                "Voltage" : data['B0']['Voltage']['Ch5'],
+                "Current" : data['B0']['Current']['Ch5']
+            }
+        }
+    )
+    ## PCB R6
+    influxdbContainer.append(
+        {
+            "measurement": "HV_COSMIC_STAND",
+            "tags": {
+                "Module" : ModuleName,
+                "Layer" : "L2",
+                "PCB" : "R6"
+            },
+            "time": CurrentTime,
+            "fields": {
+                "Voltage" : data['B0']['Voltage']['Ch4'],
+                "Current" : data['B0']['Current']['Ch4']
+            }
+        }
+    )
+    ################### L3 #####################
+    ## PCB L8
+    influxdbContainer.append(
+        {
+            "measurement": "HV_COSMIC_STAND",
+            "tags": {
+                "Module" : ModuleName,
+                "Layer" : "L3",
+                "PCB" : "L8"
+            },
+            "time": CurrentTime,
+            "fields": {
+                "Voltage" : data['B1']['Voltage']['Ch3'],
+                "Current" : data['B1']['Current']['Ch3']
+            }
+        }
+    )
+    ## PCB R8
+    influxdbContainer.append(
+        {
+            "measurement": "HV_COSMIC_STAND",
+            "tags": {
+                "Module" : ModuleName,
+                "Layer" : "L3",
+                "PCB" : "R8"
+            },
+            "time": CurrentTime,
+            "fields": {
+                "Voltage" : data['B1']['Voltage']['Ch2'],
+                "Current" : data['B1']['Current']['Ch2']
+            }
+        }
+    )
+    ## PCB L7
+    influxdbContainer.append(
+        {
+            "measurement": "HV_COSMIC_STAND",
+            "tags": {
+                "Module" : ModuleName,
+                "Layer" : "L3",
+                "PCB" : "L7"
+            },
+            "time": CurrentTime,
+            "fields": {
+                "Voltage" : data['B1']['Voltage']['Ch11'],
+                "Current" : data['B1']['Current']['Ch11']
+            }
+        }
+    )
+    ## PCB R7
+    influxdbContainer.append(
+        {
+            "measurement": "HV_COSMIC_STAND",
+            "tags": {
+                "Module" : ModuleName,
+                "Layer" : "L3",
+                "PCB" : "R7"
+            },
+            "time": CurrentTime,
+            "fields": {
+                "Voltage" : data['B1']['Voltage']['Ch10'],
+                "Current" : data['B1']['Current']['Ch10']
+            }
+        }
+    )
+    ## PCB L6
+    influxdbContainer.append(
+        {
+            "measurement": "HV_COSMIC_STAND",
+            "tags": {
+                "Module" : ModuleName,
+                "Layer" : "L3",
+                "PCB" : "L6"
+            },
+            "time": CurrentTime,
+            "fields": {
+                "Voltage" : data['B0']['Voltage']['Ch3'],
+                "Current" : data['B0']['Current']['Ch3']
+            }
+        }
+    )
+    ## PCB R6
+    influxdbContainer.append(
+        {
+            "measurement": "HV_COSMIC_STAND",
+            "tags": {
+                "Module" : ModuleName,
+                "Layer" : "L3",
+                "PCB" : "R6"
+            },
+            "time": CurrentTime,
+            "fields": {
+                "Voltage" : data['B0']['Voltage']['Ch2'],
+                "Current" : data['B0']['Current']['Ch2']
+            }
+        }
+    )
+    ################### L4 #####################
+    ## PCB L8
+    influxdbContainer.append(
+        {
+            "measurement": "HV_COSMIC_STAND",
+            "tags": {
+                "Module" : ModuleName,
+                "Layer" : "L4",
+                "PCB" : "L8"
+            },
+            "time": CurrentTime,
+            "fields": {
+                "Voltage" : data['B1']['Voltage']['Ch1'],
+                "Current" : data['B1']['Current']['Ch1']
+            }
+        }
+    )
+    ## PCB R8
+    influxdbContainer.append(
+        {
+            "measurement": "HV_COSMIC_STAND",
+            "tags": {
+                "Module" : ModuleName,
+                "Layer" : "L4",
+                "PCB" : "R8"
+            },
+            "time": CurrentTime,
+            "fields": {
+                "Voltage" : data['B1']['Voltage']['Ch0'],
+                "Current" : data['B1']['Current']['Ch0']
+            }
+        }
+    )
+    ## PCB L7
+    influxdbContainer.append(
+        {
+            "measurement": "HV_COSMIC_STAND",
+            "tags": {
+                "Module" : ModuleName,
+                "Layer" : "L4",
+                "PCB" : "L7"
+            },
+            "time": CurrentTime,
+            "fields": {
+                "Voltage" : data['B1']['Voltage']['Ch9'],
+                "Current" : data['B1']['Current']['Ch9']
+            }
+        }
+    )
+    ## PCB R7
+    influxdbContainer.append(
+        {
+            "measurement": "HV_COSMIC_STAND",
+            "tags": {
+                "Module" : ModuleName,
+                "Layer" : "L4",
+                "PCB" : "R7"
+            },
+            "time": CurrentTime,
+            "fields": {
+                "Voltage" : data['B1']['Voltage']['Ch8'],
+                "Current" : data['B1']['Current']['Ch8']
+            }
+        }
+    )
+    ## PCB L6
+    influxdbContainer.append(
+        {
+            "measurement": "HV_COSMIC_STAND",
+            "tags": {
+                "Module" : ModuleName,
+                "Layer" : "L4",
+                "PCB" : "L6"
+            },
+            "time": CurrentTime,
+            "fields": {
+                "Voltage" : data['B0']['Voltage']['Ch1'],
+                "Current" : data['B0']['Current']['Ch1']
+            }
+        }
+    )
+    ## PCB R6
+    influxdbContainer.append(
+        {
+            "measurement": "HV_COSMIC_STAND",
+            "tags": {
+                "Module" : ModuleName,
+                "Layer" : "L4",
+                "PCB" : "R6"
+            },
+            "time": CurrentTime,
+            "fields": {
+                "Voltage" : data['B0']['Voltage']['Ch0'],
+                "Current" : data['B0']['Current']['Ch0']
+            }
+        }
+    )
 
     if {'name' : databaseName} in dbclient.get_list_database():
-        dbclient.write_points(influxdbLineCommand, database=databaseName, time_precision='ms', protocol='line')
-        print("UTC-Time: {} ---> Point : {} ---> Finished writing to InfluxDB".format(CurrentTime, ReadNumber), end='\r')
+        dbclient.write_points(influxdbContainer, database=databaseName)
+        print("UTC-Time: {} ---> Module: {} ---> Point : {} ---> Finished writing to InfluxDB".format(CurrentTime, ModuleName, ReadNumber), end='\r')
         pass
 
     else:
         dbclient.create_database(databaseName)
         print("Creating database ...")
-        dbclient.write_points(influxdbLineCommand, database=databaseName, time_precision='ms', protocol='line')
+        dbclient.write_points(influxdbContainer, database=databaseName)
         print("Finished writing to InfluxDB")
 
-def subscriber2influxdb():
+def subscriber2influxdb(args):
+    global ModuleName
+    ModuleName = args.M
     mqtt_client = mqtt.Client()
     mqtt_client.on_connect = on_connect
     mqtt_client.on_message = on_message
@@ -331,8 +644,9 @@ def subscriber2influxdb():
     mqtt_client.loop_forever()
 
 if __name__ == '__main__':
+    args = parse_args()
     my_thread1 = threading.Thread(target=readHV2mqtt)
-    my_thread2 = threading.Thread(target=subscriber2influxdb)
+    my_thread2 = threading.Thread(target=subscriber2influxdb, args=(args,))
     #my_thread3 = threading.Thread(target=printDataTable)
     my_thread1.start()
     my_thread2.start()
