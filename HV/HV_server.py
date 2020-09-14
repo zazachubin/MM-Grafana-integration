@@ -223,92 +223,92 @@ def on_message(client, userdata, msg):
     data_end_time = int(CurrentTime * 1000)
     CurrentTime = datetime.fromtimestamp(CurrentTime)
 
-    influxdbLineCommand.append("{measurement},Voltage={Voltage} 8L={_8L},8R={_8R},7L={_7L},7R={_7R},6L={_6L},6R={_6R} {timestamp}"
+    influxdbLineCommand.append("{measurement},Voltage={Voltage} L8={L8},R8={R8},L7={L7},R7={R7},L6={L6},R6={R6} {timestamp}"
                                 .format(measurement='HV_COSMIC_STAND',
                                         Voltage='L1',
-                                        _8L=data['B1']['Voltage']['Ch7'],
-                                        _8R=data['B1']['Voltage']['Ch6'],
-                                        _7L=data['B1']['Voltage']['Ch15'],
-                                        _7R=data['B1']['Voltage']['Ch14'],
-                                        _6L=data['B0']['Voltage']['Ch7'],
-                                        _6R=data['B0']['Voltage']['Ch6'],
+                                        L8=data['B1']['Voltage']['Ch7'],
+                                        R8=data['B1']['Voltage']['Ch6'],
+                                        L7=data['B1']['Voltage']['Ch15'],
+                                        R7=data['B1']['Voltage']['Ch14'],
+                                        L6=data['B0']['Voltage']['Ch7'],
+                                        R6=data['B0']['Voltage']['Ch6'],
                                         timestamp=data_end_time))
 
-    influxdbLineCommand.append("{measurement},Current={Current} 8L={_8L},8R={_8R},7L={_7L},7R={_7R},6L={_6L},6R={_6R} {timestamp}"
+    influxdbLineCommand.append("{measurement},Current={Current} L8={L8},R8={R8},L7={L7},R7={R7},L6={L6},R6={R6} {timestamp}"
                                 .format(measurement='HV_COSMIC_STAND',
                                         Current='L1',
-                                        _8L=data['B1']['Current']['Ch7'],
-                                        _8R=data['B1']['Current']['Ch6'],
-                                        _7L=data['B1']['Current']['Ch15'],
-                                        _7R=data['B1']['Current']['Ch14'],
-                                        _6L=data['B0']['Current']['Ch7'],
-                                        _6R=data['B0']['Current']['Ch6'],
+                                        L8=data['B1']['Current']['Ch7'],
+                                        R8=data['B1']['Current']['Ch6'],
+                                        L7=data['B1']['Current']['Ch15'],
+                                        R7=data['B1']['Current']['Ch14'],
+                                        L6=data['B0']['Current']['Ch7'],
+                                        R6=data['B0']['Current']['Ch6'],
                                         timestamp=data_end_time))
 
-    influxdbLineCommand.append("{measurement},Voltage={Voltage} 8L={_8L},8R={_8R},7L={_7L},7R={_7R},6L={_6L},6R={_6R} {timestamp}"
+    influxdbLineCommand.append("{measurement},Voltage={Voltage} L8={L8},R8={R8},L7={L7},R7={R7},L6={L6},R6={R6} {timestamp}"
                                 .format(measurement='HV_COSMIC_STAND',
                                         Voltage='L2',
-                                        _8L=data['B1']['Voltage']['Ch5'],
-                                        _8R=data['B1']['Voltage']['Ch4'],
-                                        _7L=data['B1']['Voltage']['Ch13'],
-                                        _7R=data['B1']['Voltage']['Ch12'],
-                                        _6L=data['B0']['Voltage']['Ch5'],
-                                        _6R=data['B0']['Voltage']['Ch4'],
+                                        L8=data['B1']['Voltage']['Ch5'],
+                                        R8=data['B1']['Voltage']['Ch4'],
+                                        L7=data['B1']['Voltage']['Ch13'],
+                                        R7=data['B1']['Voltage']['Ch12'],
+                                        L6=data['B0']['Voltage']['Ch5'],
+                                        R6=data['B0']['Voltage']['Ch4'],
                                         timestamp=data_end_time))
 
-    influxdbLineCommand.append("{measurement},Current={Current} 8L={_8L},8R={_8R},7L={_7L},7R={_7R},6L={_6L},6R={_6R} {timestamp}"
+    influxdbLineCommand.append("{measurement},Current={Current} L8={L8},R8={R8},L7={L7},R7={R7},L6={L6},R6={R6} {timestamp}"
                                 .format(measurement='HV_COSMIC_STAND',
                                         Current='L2',
-                                        _8L=data['B1']['Current']['Ch5'],
-                                        _8R=data['B1']['Current']['Ch4'],
-                                        _7L=data['B1']['Current']['Ch13'],
-                                        _7R=data['B1']['Current']['Ch12'],
-                                        _6L=data['B0']['Current']['Ch5'],
-                                        _6R=data['B0']['Current']['Ch4'],
+                                        L8=data['B1']['Current']['Ch5'],
+                                        R8=data['B1']['Current']['Ch4'],
+                                        L7=data['B1']['Current']['Ch13'],
+                                        R7=data['B1']['Current']['Ch12'],
+                                        L6=data['B0']['Current']['Ch5'],
+                                        R6=data['B0']['Current']['Ch4'],
                                         timestamp=data_end_time))
 
-    influxdbLineCommand.append("{measurement},Voltage={Voltage} 8L={_8L},8R={_8R},7L={_7L},7R={_7R},6L={_6L},6R={_6R} {timestamp}"
+    influxdbLineCommand.append("{measurement},Voltage={Voltage} L8={L8},R8={R8},L7={L7},R7={R7},L6={L6},R6={R6} {timestamp}"
                                 .format(measurement='HV_COSMIC_STAND',
                                         Voltage='L3',
-                                        _8L=data['B1']['Voltage']['Ch3'],
-                                        _8R=data['B1']['Voltage']['Ch2'],
-                                        _7L=data['B1']['Voltage']['Ch11'],
-                                        _7R=data['B1']['Voltage']['Ch10'],
-                                        _6L=data['B0']['Voltage']['Ch3'],
-                                        _6R=data['B0']['Voltage']['Ch2'],
+                                        L8=data['B1']['Voltage']['Ch3'],
+                                        R8=data['B1']['Voltage']['Ch2'],
+                                        L7=data['B1']['Voltage']['Ch11'],
+                                        R7=data['B1']['Voltage']['Ch10'],
+                                        L6=data['B0']['Voltage']['Ch3'],
+                                        R6=data['B0']['Voltage']['Ch2'],
                                         timestamp=data_end_time))
 
-    influxdbLineCommand.append("{measurement},Current={Current} 8L={_8L},8R={_8R},7L={_7L},7R={_7R},6L={_6L},6R={_6R} {timestamp}"
+    influxdbLineCommand.append("{measurement},Current={Current} L8={L8},R8={R8},L7={L7},R7={R7},L6={L6},R6={R6} {timestamp}"
                                 .format(measurement='HV_COSMIC_STAND',
                                         Current='L3',
-                                        _8L=data['B1']['Current']['Ch3'],
-                                        _8R=data['B1']['Current']['Ch2'],
-                                        _7L=data['B1']['Current']['Ch11'],
-                                        _7R=data['B1']['Current']['Ch10'],
-                                        _6L=data['B0']['Current']['Ch3'],
-                                        _6R=data['B0']['Current']['Ch2'],
+                                        L8=data['B1']['Current']['Ch3'],
+                                        R8=data['B1']['Current']['Ch2'],
+                                        L7=data['B1']['Current']['Ch11'],
+                                        R7=data['B1']['Current']['Ch10'],
+                                        L6=data['B0']['Current']['Ch3'],
+                                        R6=data['B0']['Current']['Ch2'],
                                         timestamp=data_end_time))
 
-    influxdbLineCommand.append("{measurement},Voltage={Voltage} 8L={_8L},8R={_8R},7L={_7L},7R={_7R},6L={_6L},6R={_6R} {timestamp}"
+    influxdbLineCommand.append("{measurement},Voltage={Voltage} L8={L8},R8={R8},L7={L7},R7={R7},L6={L6},R6={R6} {timestamp}"
                                 .format(measurement='HV_COSMIC_STAND',
                                         Voltage='L4',
-                                        _8L=data['B1']['Voltage']['Ch1'],
-                                        _8R=data['B1']['Voltage']['Ch0'],
-                                        _7L=data['B1']['Voltage']['Ch9'],
-                                        _7R=data['B1']['Voltage']['Ch8'],
-                                        _6L=data['B0']['Voltage']['Ch1'],
-                                        _6R=data['B0']['Voltage']['Ch0'],
+                                        L8=data['B1']['Voltage']['Ch1'],
+                                        R8=data['B1']['Voltage']['Ch0'],
+                                        L7=data['B1']['Voltage']['Ch9'],
+                                        R7=data['B1']['Voltage']['Ch8'],
+                                        L6=data['B0']['Voltage']['Ch1'],
+                                        R6=data['B0']['Voltage']['Ch0'],
                                         timestamp=data_end_time))
 
-    influxdbLineCommand.append("{measurement},Current={Current} 8L={_8L},8R={_8R},7L={_7L},7R={_7R},6L={_6L},6R={_6R} {timestamp}"
+    influxdbLineCommand.append("{measurement},Current={Current} L8={L8},R8={R8},L7={L7},R7={R7},L6={L6},R6={R6} {timestamp}"
                                 .format(measurement='HV_COSMIC_STAND',
                                         Current='L4',
-                                        _8L=data['B1']['Current']['Ch1'],
-                                        _8R=data['B1']['Current']['Ch0'],
-                                        _7L=data['B1']['Current']['Ch9'],
-                                        _7R=data['B1']['Current']['Ch8'],
-                                        _6L=data['B0']['Current']['Ch1'],
-                                        _6R=data['B0']['Current']['Ch0'],
+                                        L8=data['B1']['Current']['Ch1'],
+                                        R8=data['B1']['Current']['Ch0'],
+                                        L7=data['B1']['Current']['Ch9'],
+                                        R7=data['B1']['Current']['Ch8'],
+                                        L6=data['B0']['Current']['Ch1'],
+                                        R6=data['B0']['Current']['Ch0'],
                                         timestamp=data_end_time))
 
     if {'name' : databaseName} in dbclient.get_list_database():
