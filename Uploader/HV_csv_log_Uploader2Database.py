@@ -6,10 +6,11 @@ import arrow
 import pytz
 import csv
 
+# Source Code: https://github.com/zazachubin/MM-Grafana-integration
 ############################ Requirement ##############################
 # python3 -m pip install arrow
 ################################ Run ##################################
-# python3 test_csv.py --file M21_2020_06_26_B1_001_test.csv --module M21 --board B1
+# python3 HV_csv_log_Uploader2Database --file M21_2020_06_26_B1_001_test.csv --module M21 --board B1
 
 def parse_args():
     """Parse the args."""
@@ -57,7 +58,10 @@ def Ru_to_UTC(Ru_timestamp):
     timezone = pytz.timezone('Europe/Moscow')
     dt = arrow.get(timezone.localize(timestamp_Ru)).to('UTC')
     convertedStamp = str(dt.date()) + ' ' + str(dt.time())
-    Ru_to_UTC = datetime.strptime(convertedStamp, '%Y-%m-%d %H:%M:%S.%f')
+    try:
+        Ru_to_UTC = datetime.strptime(convertedStamp, '%Y-%m-%d %H:%M:%S.%f')
+    except:
+        Ru_to_UTC = datetime.strptime(convertedStamp, '%Y-%m-%d %H:%M:%S')
     return Ru_to_UTC
 ############################# ProgressBar #############################
 def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, length = 100, fill = '█', printEnd = "\r"):
@@ -584,7 +588,7 @@ if dataLength-(stop-windowSize) != 0:
     for j in range(len(Time[start:stop])):
         ################### L1 #####################
         if Board == "B1":
-            ## PCB L8  B1
+            ## PCB L8  B1print(Time2[205215:205230])
             influxdbContainer.append(
                 {
                     "measurement": "HV_COSMIC_STAND",
@@ -649,7 +653,7 @@ if dataLength-(stop-windowSize) != 0:
                 }
             )
         elif Board == "B0":
-            ## PCB L6  B0
+            ## PCB L6  B0print(Time2[205215:205230])
             influxdbContainer.append(
                 {
                     "measurement": "HV_COSMIC_STAND",
