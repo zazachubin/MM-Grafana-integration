@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from influxdb import InfluxDBClient
 from datetime import timezone
 from datetime import datetime
@@ -6,11 +7,15 @@ import arrow
 import pytz
 import csv
 
-# Source Code: https://github.com/zazachubin/MM-Grafana-integration
 ############################ Requirement ##############################
+# Source Code: https://github.com/zazachubin/MM-Grafana-integration
 # python3 -m pip install arrow
 ################################ Run ##################################
-# python3 HV_csv_log_Uploader2Database --file M21_2020_06_26_B1_001_test.csv --module M21 --board B1
+# -- run new strategy board connectivity
+# python3 HV_csv_log_Uploader2Database.py --file M21_2020_06_26_B1_001_test.csv --module M21 --board B1
+
+# -- run old strategy board connectivity
+# python3 HV_csv_log_Uploader2Database.py --file M21_2020_06_26_B1_001_test.csv --module M21 --board B0 --connect old
 
 def parse_args():
     """Parse the args."""
@@ -28,6 +33,9 @@ def parse_args():
     parser.add_argument('--w', type=int, required=False,
                         default=10000,
                         help='Data transfer window size to database')
+    parser.add_argument('--connect', type=str, required=False,
+                        default='new',
+                        help='HV boards connection strategy (new, old)')
     return parser.parse_args()
 
 args = parse_args()
@@ -35,6 +43,7 @@ ModuleName = args.module
 Board = args.board
 FileName = args.file
 windowSize = args.w
+connectStrategy = args.connect
 
 ############################## InfluxDB ###############################
 InfluxDB_ADDRESS = '159.93.78.13'  # InfluxDB server address
@@ -172,7 +181,7 @@ for i in range(1, windowNumber):
     for j in range(len(Time[start:stop])):
 
         ################### L1 #####################
-        if Board == "B1":
+        if Board == "B1" and connectStrategy == 'new':
             ## PCB L8  B1
             influxdbContainer.append(
                 {
@@ -270,8 +279,41 @@ for i in range(1, windowNumber):
                     }
                 }
             )
+            if connectStrategy == 'old':
+                ## PCB L7  B0
+                influxdbContainer.append(
+                    {
+                        "measurement": "HV_COSMIC_STAND",
+                        "tags": {
+                            "Module" : ModuleName,
+                            "Layer" : "L1",
+                            "PCB" : "L7"
+                        },
+                        "time": Time[start:stop][j],
+                        "fields": {
+                            "Voltage" : v_ch15[start:stop][j],
+                            "Current" : i_ch15[start:stop][j]
+                        }
+                    }
+                )
+                ## PCB R7  B0
+                influxdbContainer.append(
+                    {
+                        "measurement": "HV_COSMIC_STAND",
+                        "tags": {
+                            "Module" : ModuleName,
+                            "Layer" : "L1",
+                            "PCB" : "R7"
+                        },
+                        "time": Time[start:stop][j],
+                        "fields": {
+                            "Voltage" : v_ch14[start:stop][j],
+                            "Current" : i_ch14[start:stop][j]
+                        }
+                    }
+                )
         ################### L2 #####################
-        if Board == "B1":
+        if Board == "B1" and connectStrategy == 'new':
             ## PCB L8  B1
             influxdbContainer.append(
                 {
@@ -369,8 +411,41 @@ for i in range(1, windowNumber):
                     }
                 }
             )
+            if connectStrategy == 'old':
+                ## PCB L7  B0
+                influxdbContainer.append(
+                    {
+                        "measurement": "HV_COSMIC_STAND",
+                        "tags": {
+                            "Module" : ModuleName,
+                            "Layer" : "L2",
+                            "PCB" : "L7"
+                        },
+                        "time": Time[start:stop][j],
+                        "fields": {
+                            "Voltage" : v_ch13[start:stop][j],
+                            "Current" : i_ch13[start:stop][j]
+                        }
+                    }
+                )
+                ## PCB R7  B0
+                influxdbContainer.append(
+                    {
+                        "measurement": "HV_COSMIC_STAND",
+                        "tags": {
+                            "Module" : ModuleName,
+                            "Layer" : "L2",
+                            "PCB" : "R7"
+                        },
+                        "time": Time[start:stop][j],
+                        "fields": {
+                            "Voltage" : v_ch12[start:stop][j],
+                            "Current" : i_ch12[start:stop][j]
+                        }
+                    }
+                )
         ################### L3 #####################
-        if Board == "B1":
+        if Board == "B1" and connectStrategy == 'new':
             ## PCB L8  B1
             influxdbContainer.append(
                 {
@@ -435,7 +510,7 @@ for i in range(1, windowNumber):
                     }
                 }
             )
-        elif Board == "B0":
+        elif Board == "B0" and connectStrategy == 'new':
             ## PCB L6  B0
             influxdbContainer.append(
                 {
@@ -468,8 +543,41 @@ for i in range(1, windowNumber):
                     }
                 }
             )
+            if connectStrategy == 'old':
+                ## PCB L7  B0
+                influxdbContainer.append(
+                    {
+                        "measurement": "HV_COSMIC_STAND",
+                        "tags": {
+                            "Module" : ModuleName,
+                            "Layer" : "L3",
+                            "PCB" : "L7"
+                        },
+                        "time": Time[start:stop][j],
+                        "fields": {
+                            "Voltage" : v_ch11[start:stop][j],
+                            "Current" : i_ch11[start:stop][j]
+                        }
+                    }
+                )
+                ## PCB R7  B0
+                influxdbContainer.append(
+                    {
+                        "measurement": "HV_COSMIC_STAND",
+                        "tags": {
+                            "Module" : ModuleName,
+                            "Layer" : "L3",
+                            "PCB" : "R7"
+                        },
+                        "time": Time[start:stop][j],
+                        "fields": {
+                            "Voltage" : v_ch10[start:stop][j],
+                            "Current" : i_ch10[start:stop][j]
+                        }
+                    }
+                )
         ################### L4 #####################
-        if Board == "B1":
+        if Board == "B1" and connectStrategy == 'new':
             ## PCB L8  B1
             influxdbContainer.append(
                 {
@@ -567,6 +675,39 @@ for i in range(1, windowNumber):
                     }
                 }
             )
+            if connectStrategy == 'old':
+                ## PCB L7  B0
+                influxdbContainer.append(
+                    {
+                        "measurement": "HV_COSMIC_STAND",
+                        "tags": {
+                            "Module" : ModuleName,
+                            "Layer" : "L4",
+                            "PCB" : "L7"
+                        },
+                        "time": Time[start:stop][j],
+                        "fields": {
+                            "Voltage" : v_ch9[start:stop][j],
+                            "Current" : i_ch9[start:stop][j]
+                        }
+                    }
+                )
+                ## PCB R7  B0
+                influxdbContainer.append(
+                    {
+                        "measurement": "HV_COSMIC_STAND",
+                        "tags": {
+                            "Module" : ModuleName,
+                            "Layer" : "L4",
+                            "PCB" : "R7"
+                        },
+                        "time": Time[start:stop][j],
+                        "fields": {
+                            "Voltage" : v_ch8[start:stop][j],
+                            "Current" : i_ch8[start:stop][j]
+                        }
+                    }
+                )
 
         printProgressBar(j, len(Time[start:stop]), prefix = "Progress: {}/{} -> Module:{} -> UTC-Time: {}".format(i, windowNumber, ModuleName, Time[start:stop][-1]), suffix = 'Complete', length = 25)
 
@@ -587,8 +728,8 @@ if dataLength-(stop-windowSize) != 0:
     influxdbContainer = []
     for j in range(len(Time[start:stop])):
         ################### L1 #####################
-        if Board == "B1":
-            ## PCB L8  B1print(Time2[205215:205230])
+        if Board == "B1" and connectStrategy == 'new':
+            ## PCB L8  B1
             influxdbContainer.append(
                 {
                     "measurement": "HV_COSMIC_STAND",
@@ -653,7 +794,7 @@ if dataLength-(stop-windowSize) != 0:
                 }
             )
         elif Board == "B0":
-            ## PCB L6  B0print(Time2[205215:205230])
+            ## PCB L6  B0
             influxdbContainer.append(
                 {
                     "measurement": "HV_COSMIC_STAND",
@@ -685,8 +826,41 @@ if dataLength-(stop-windowSize) != 0:
                     }
                 }
             )
+            if connectStrategy == 'old':
+                ## PCB L7  B0
+                influxdbContainer.append(
+                    {
+                        "measurement": "HV_COSMIC_STAND",
+                        "tags": {
+                            "Module" : ModuleName,
+                            "Layer" : "L1",
+                            "PCB" : "L7"
+                        },
+                        "time": Time[start:stop][j],
+                        "fields": {
+                            "Voltage" : v_ch15[start:stop][j],
+                            "Current" : i_ch15[start:stop][j]
+                        }
+                    }
+                )
+                ## PCB R7  B0
+                influxdbContainer.append(
+                    {
+                        "measurement": "HV_COSMIC_STAND",
+                        "tags": {
+                            "Module" : ModuleName,
+                            "Layer" : "L1",
+                            "PCB" : "R7"
+                        },
+                        "time": Time[start:stop][j],
+                        "fields": {
+                            "Voltage" : v_ch14[start:stop][j],
+                            "Current" : i_ch14[start:stop][j]
+                        }
+                    }
+                )
         ################### L2 #####################
-        if Board == "B1":
+        if Board == "B1" and connectStrategy == 'new':
             ## PCB L8  B1
             influxdbContainer.append(
                 {
@@ -784,8 +958,41 @@ if dataLength-(stop-windowSize) != 0:
                     }
                 }
             )
+            if connectStrategy == 'old':
+                ## PCB L7  B0
+                influxdbContainer.append(
+                    {
+                        "measurement": "HV_COSMIC_STAND",
+                        "tags": {
+                            "Module" : ModuleName,
+                            "Layer" : "L2",
+                            "PCB" : "L7"
+                        },
+                        "time": Time[start:stop][j],
+                        "fields": {
+                            "Voltage" : v_ch13[start:stop][j],
+                            "Current" : i_ch13[start:stop][j]
+                        }
+                    }
+                )
+                ## PCB R7  B0
+                influxdbContainer.append(
+                    {
+                        "measurement": "HV_COSMIC_STAND",
+                        "tags": {
+                            "Module" : ModuleName,
+                            "Layer" : "L2",
+                            "PCB" : "R7"
+                        },
+                        "time": Time[start:stop][j],
+                        "fields": {
+                            "Voltage" : v_ch12[start:stop][j],
+                            "Current" : i_ch12[start:stop][j]
+                        }
+                    }
+                )
         ################### L3 #####################
-        if Board == "B1":
+        if Board == "B1" and connectStrategy == 'new':
             ## PCB L8  B1
             influxdbContainer.append(
                 {
@@ -883,8 +1090,41 @@ if dataLength-(stop-windowSize) != 0:
                     }
                 }
             )
+            if connectStrategy == 'old':
+                ## PCB L7  B0
+                influxdbContainer.append(
+                    {
+                        "measurement": "HV_COSMIC_STAND",
+                        "tags": {
+                            "Module" : ModuleName,
+                            "Layer" : "L3",
+                            "PCB" : "L7"
+                        },
+                        "time": Time[start:stop][j],
+                        "fields": {
+                            "Voltage" : v_ch11[start:stop][j],
+                            "Current" : i_ch11[start:stop][j]
+                        }
+                    }
+                )
+                ## PCB R7  B0
+                influxdbContainer.append(
+                    {
+                        "measurement": "HV_COSMIC_STAND",
+                        "tags": {
+                            "Module" : ModuleName,
+                            "Layer" : "L3",
+                            "PCB" : "R7"
+                        },
+                        "time": Time[start:stop][j],
+                        "fields": {
+                            "Voltage" : v_ch10[start:stop][j],
+                            "Current" : i_ch10[start:stop][j]
+                        }
+                    }
+                )
         ################### L4 #####################
-        if Board == "B1":
+        if Board == "B1" and connectStrategy == 'new':
             ## PCB L8  B1
             influxdbContainer.append(
                 {
@@ -982,6 +1222,39 @@ if dataLength-(stop-windowSize) != 0:
                     }
                 }
             )
+            if connectStrategy == 'old':
+                ## PCB L7  B0
+                influxdbContainer.append(
+                    {
+                        "measurement": "HV_COSMIC_STAND",
+                        "tags": {
+                            "Module" : ModuleName,
+                            "Layer" : "L4",
+                            "PCB" : "L7"
+                        },
+                        "time": Time[start:stop][j],
+                        "fields": {
+                            "Voltage" : v_ch9[start:stop][j],
+                            "Current" : i_ch9[start:stop][j]
+                        }
+                    }
+                )
+                ## PCB R7  B0
+                influxdbContainer.append(
+                    {
+                        "measurement": "HV_COSMIC_STAND",
+                        "tags": {
+                            "Module" : ModuleName,
+                            "Layer" : "L4",
+                            "PCB" : "R7"
+                        },
+                        "time": Time[start:stop][j],
+                        "fields": {
+                            "Voltage" : v_ch8[start:stop][j],
+                            "Current" : i_ch8[start:stop][j]
+                        }
+                    }
+                )
     
     if {'name' : databaseName} in dbclient.get_list_database():
         dbclient.write_points(influxdbContainer, database=databaseName)
