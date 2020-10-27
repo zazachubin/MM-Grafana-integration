@@ -6,8 +6,11 @@
     python3 -m pip install paho-mqtt
     ############## install terminal table visualization ################
     python3 -m pip install texttable
+    ######################### install InfluxDb #########################
+    # python3 -m pip install influxdb
+    # python3 -m pip install influxdb-client
 
-    test run: python3 HV_server_test.py --M M25
+    test run: python3 HV_server_test.py --M <ModuleName>
 '''
 from pysnmp.entity.rfc3413.oneliner import cmdgen
 from influxdb import InfluxDBClient
@@ -23,16 +26,14 @@ import os
 import re
 
 ################################ MQTT #################################
-MQTT_ADDRESS = '159.93.78.13'      # MQTT server address
-#MQTT_ADDRESS = 'localhost'         # MQTT Local address
+MQTT_ADDRESS = 'localhost'         # MQTT Local address
 MQTT_TOPIC = 'HV_Cosmic'           # Topic name
 MQTT_port = 1883                   # MQTT port
 ############################## InfluxDB ###############################
-InfluxDB_ADDRESS = '159.93.78.13'  # InfluxDB server address
-#InfluxDB_ADDRESS = 'localhost'     # InfluxDB Local address
+InfluxDB_ADDRESS = 'bes3.jinr.ru'  # InfluxDB Local address
 databaseName = 'MM_Dubna'          # Database name
 username = 'MM_Dubna'              # Database user name          
-password = 'cd4026'                # Database password
+password = '********'              # Database password
 DB_port = 8086                     # Database port
 ################################# HV ##################################
 HVaddress = '192.168.0.250'        # HV IP address
