@@ -34,7 +34,7 @@ HV_port = 161                      # HV port
 ############################# Variables ###############################
 ReadNumber = 1                     # Counter
 Delay = 0.05                       # Device reading delay
-ModuleName = ""                    # Measuring module name
+ModuleName = "test"                # Measuring module name
 databaseStatus = "on"              # Database on/off status
 TermPrint = "off"                  # Print data in terminal
 logstatus = "on"                   # Local log on/off
